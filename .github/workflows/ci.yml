@@ -28,7 +28,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5.5.1
         with:
-          images: ghcr.io/2101849/MiroActivityProvider
+          images: ghcr.io/2401849/MiroActivityProvider
 
       - name: Build and push Docker image
         id: push
