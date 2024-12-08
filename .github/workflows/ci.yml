@@ -24,7 +24,7 @@ jobs:
 
       - run: npm install
 
-      - run: npm run buildncc
+      - run: npm run build
 
       - name: Log in to ghcr
         uses: docker/login-action@v3.3.0
