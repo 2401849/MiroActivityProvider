@@ -5,7 +5,7 @@
   "main": "dist/src/main",
   "scripts": {
     "build": "nest build",
-    "buildncc": "ncc build src/main.ts -m -C -o dist/ --target es2024 && cp -R views dist/ && cp -R assets dist/",
+    "buildncc": "ncc build src/main.ts -m -C -o dist/ --target es2024 && cp -R assets dist/",
     "start:dev": "nest start --watch",
     "start:prod": "node ."
   },
@@ -17,7 +17,6 @@
     "@nestjs/common": "^10.4.13",
     "@nestjs/core": "^10.4.15",
     "@nestjs/platform-express": "^10.4.15",
-    "hbs": "^4.2.0",
     "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {

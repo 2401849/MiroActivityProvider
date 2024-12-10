@@ -10,11 +10,11 @@ import {
 import { ActivityService } from "./activity.service";
 import { Activity } from "./interfaces/activity.interface";
 
-@Controller("/activity")
+@Controller("activity")
 export class ActivityController {
   constructor(private readonly activityService: ActivityService) {}
 
-  @Post("/interface")
+  @Post("interface")
   registerUserMiroId(@Req() request: Request): Promise<void> {
     return this.activityService.registerUserMiroId(request);
   }
@@ -37,9 +37,7 @@ export class ActivityController {
   }
 
   @Get("/interface/:activity")
-  @Render("activity")
-  provideInterface(@Param("activity") activityRef: string) {
-    const { activityID, IuserId } = this.activityService.decode(activityRef);
-    return { activityID: activityID, IuserId: IuserId };
+  provideInterface() {
+    return this.activityService.getInterface();
   }
 }

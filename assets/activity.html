@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Activity Details</title>
+    <script>
+      function initializePage() {
+        const path = window.location.pathname;
+        const base64String = path.split("/interface/")[1];
+
+        if (!base64String) {
+          console.error("No encoded data found in the URL.");
+          return;
+        }
+
+        const decodedData = JSON.parse(window.atob(base64String));
+
+        if (!decodedData) {
+          console.error("Failed to decode or parse the data.");
+          return;
+        }
+
+        localStorage.setItem("IuserId", decodedData.IuserId);
+        localStorage.setItem("activityID", decodedData.activityID);
+
+        document.getElementById(
+          "welcomeMessage"
+        ).innerText = `Welcome ${decodedData.IuserId}`;
+        document.getElementById(
+          "activityDetails"
+        ).innerText = `Activity Details for activity: ${decodedData.activityID}`;
+      }
+
+      function registerActivity(event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const miroUserId = document.getElementById("miroUserId").value;
+        const requestBody = {
+          IuserId: localStorage.getItem("IuserId"),
+          activityID: localStorage.getItem("activityID"),
+          miroUserId,
+        };
+
+        const url =
+          window.location.protocol +
+          "//" +
+          window.location.host +
+          "/activity/interface";
+
+        fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(requestBody),
+          mode: "cors",
+        })
+          .then((res) => {
+            if (res.ok) {
+              alert("Verifica o teu email");
+            } else {
+              console.error(res.statusText);
+            }
+          })
+          .catch((error) => console.error(error));
+
+        return false;
+      }
+
+      // Initialize the page on load
+      window.onload = initializePage;
+    </script>
+  </head>
+  <body>
+    <h1 id="welcomeMessage"></h1>
+    <h1 id="activityDetails"></h1>
+    <p>Instructions:</p>
+    <form>
+      <label for="miroUserId">User ID:</label><br />
+      <input
+        type="text"
+        id="miroUserId"
+        name="userId"
+        placeholder="Your Miro User ID"
+      /><br /><br />
+    </form>
+    <a href="#" onclick="return registerActivity(event)">Register</a>
+  </body>
+</html>

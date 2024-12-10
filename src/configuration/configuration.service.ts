@@ -5,7 +5,7 @@ import { ConfigParameters } from "./interfaces/configuration.interface";
 
 @Injectable()
 export class ConfigurationService {
-  private readonly htmlContent;
+  private readonly htmlContent: string;
 
   constructor() {
     const filePath = join(process.cwd(), "assets", "configuration.html");

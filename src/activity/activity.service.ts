@@ -2,12 +2,18 @@ import { ConsoleLogger, Injectable, NotFoundException } from "@nestjs/common";
 import { Request } from "express";
 import { MiroWrapperService } from "src/miro-wrapper/miro-wrapper.service";
 import { Activity } from "./interfaces/activity.interface";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 
 @Injectable()
 export class ActivityService {
   private readonly activityList: Activity[] = [];
+  private readonly htmlContent: string;
 
-  constructor(private readonly logger: ConsoleLogger) {}
+  constructor() {
+    const filePath = join(process.cwd(), "assets", "activity.html");
+    this.htmlContent = readFileSync(filePath, "utf-8");
+  }
 
   public async deploy(
     id: string,
@@ -54,7 +60,7 @@ export class ActivityService {
     await MiroWrapperService.getInstance().registerUser(boardId, miroUserId);
   }
 
-  decode(str: string): Record<string, string> {
-    return JSON.parse(atob(str));
+  getInterface(): string {
+    return this.htmlContent;
   }
 }
