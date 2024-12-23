@@ -1,4 +1,4 @@
-import { ConsoleLogger, Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { Request } from "express";
 import { MiroWrapperService } from "src/miro-wrapper/miro-wrapper.service";
 import { Activity } from "./interfaces/activity.interface";
@@ -9,6 +9,8 @@ import { join } from "node:path";
 export class ActivityService {
   private readonly activityList: Activity[] = [];
   private readonly htmlContent: string;
+  private readonly miroWrapperService = MiroWrapperService.getInstance();
+
 
   constructor() {
     const filePath = join(process.cwd(), "assets", "activity.html");
@@ -40,9 +42,10 @@ export class ActivityService {
 
     this.activityList.push(activity);
 
+    const teamId = activity.json_params["team_id"];
     const boardId = activity.json_params["boardid"];
 
-    await MiroWrapperService.getInstance().subscribeBoard(boardId);
+    await this.miroWrapperService.subscribeBoard(teamId, boardId);
 
     return { deployUrl: url };
   }
@@ -55,9 +58,10 @@ export class ActivityService {
     );
 
     if (!activityData) throw new NotFoundException();
+    const teamId = activityData.json_params["team_id"];
     const boardId = activityData.json_params["boardid"];
 
-    await MiroWrapperService.getInstance().registerUser(boardId, miroUserId);
+    await this.miroWrapperService.registerUser(teamId, boardId, miroUserId);
   }
 
   getInterface(): string {
