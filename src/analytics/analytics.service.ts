@@ -1,42 +1,41 @@
-import { Injectable } from "@nestjs/common";
-import { AnalyticsActivity } from "./interfaces/analytics.interface";
-import { AnaltyticsContract } from "./models/analytics.models";
+import {Injectable} from "@nestjs/common";
+import {AnalyticsContract} from "./interfaces/analytics-contract.interface";
+import {InjectModel} from "@nestjs/mongoose";
+import {ActivityAnalytics, Analytics} from "./entities/analytics.entity";
+import {Model} from "mongoose";
 
 @Injectable()
 export class AnalyticsService {
-  private readonly analyticsContract = AnaltyticsContract;
-  private activities: AnalyticsActivity[] = [
-    {
-      inveniraStdID: "1001",
-      quantAnalytics: [{ name: "elements_count", type: "integer", value: 3 }],
-      qualAnalytics: [
-        {
-          name: "elements_created_at",
-          type: "application/json",
-          value: [
-            { object_name: "obj_1", date: "2024" },
-            { object_name: "obj_2", date: "2022" },
-            { object_name: "obj_3", date: "2021" },
-          ],
-        },
-        {
-          name: "elements_content",
-          type: "application/json",
-          value: [
-            { object_name: "obj_1", date: "this is the content of the object" },
-            { object_name: "obj_2", date: "this is the content of the object" },
-            { object_name: "obj_3", date: "this is the content of the object" },
-          ],
-        },
-      ],
-    },
-  ];
 
-  findOne(id: string): AnalyticsActivity | undefined {
-    return this.activities.find((activity) => activity.inveniraStdID === id);
-  }
+    constructor(@InjectModel(ActivityAnalytics.name)
+                private analyticsDtoModel: Model<ActivityAnalytics>) {
+    }
 
-  getContract() {
-    return this.analyticsContract;
-  }
+    async findAll(activityId: string): Promise<Analytics[]> {
+        const pipeline = [
+            { $unwind: '$analytics' },
+            { $match: { 'analytics.activityId': activityId } },
+            {
+                $project: {
+                    _id: 0,
+                    inveniraStdID: 1,
+                    qualAnalytics: '$analytics.qualAnalytics',
+                    quantAnalytics: '$analytics.quantAnalytics',
+                },
+            },
+        ];
+        return await this.analyticsDtoModel.aggregate(pipeline).exec();
+    }
+
+    getContract(): AnalyticsContract {
+        return {
+            qualAnalytics: [
+                {name: "elements_created_at", type: "application/json"},
+                {name: "elements_content", type: "application/json"},
+            ],
+            quantAnalytics: [
+                {name: "elements_count", type: "integer"},
+            ],
+        };
+    }
 }

@@ -1,7 +1,9 @@
-import { ConfigParameters } from "src/configuration/interfaces/configuration.interface";
-
-export interface Activity {
-  activityID: string;
-  "Inven!RAstdID": string;
-  json_params: ConfigParameters;
+export interface ActivityInterface {
+    activityID: string;
+    activityName: string;
+    activityInstructions?: string;
+    iUserId: string;
+    miroUserId: string;
+    teamId: string;
+    boardId: string;
 }

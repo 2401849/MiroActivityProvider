@@ -1,36 +1,157 @@
-<html>
-  <head>
-    <title>Activity Provider Miro - Configuration</title>
-  </head>
-  <body>
-    <h1>Configuration Interface</h1>
-    <form id="configurationForm">
-      <label for="name">Name:</label><br />
-      <input
-        type="text"
-        id="name"
-        name="name"
-        placeholder="Enter name"
-        required
-      /><br /><br />
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Activity Provider Miro - Configuration</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.5;
+    }
+    .info-icon {
+      cursor: pointer;
+      font-size: 16px;
+      color: #555;
+      margin-left: 5px;
+      border: 2px solid #ccc;
+      border-radius: 50%;
+      padding: 0 7px;
+      background-color: #f9f9f9;
+    }
+    .info-tooltip {
+      display: none;
+      position: absolute;
+      background-color: #fff;
+      color: #333;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 10px;
+      font-size: 14px;
+      width: 600px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      z-index: 10;
+    }
+    .info-icon:hover + .info-tooltip {
+      display: block;
+    }
+    .disabled {
+      cursor: not-allowed;
+      background-color: #ccc;
+      border: 1px solid #999;
+      color: #666;
+    }
+    .tooltip {
+      position: absolute;
+      display: none;
+      background: #333;
+      color: white;
+      border-radius: 5px;
+      padding: 5px;
+      font-size: 12px;
+    }
+    button:disabled:hover ~ .tooltip {
+      display: block;
+    }
+    button {
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+      padding: 10px 20px;
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+<h1>Configuration Interface</h1>
+<form id="configurationForm">
+  <label for="name">Name:</label><br />
+  <input
+          type="text"
+          id="name"
+          name="name"
+          placeholder="Enter name"
+          required
+  /><br /><br />
 
-      <label for="instructions">Instructions:</label><br />
-      <textarea
-        id="instructions"
-        name="instructions"
-        placeholder="Enter instructions"
-        rows="4"
-        required
-      ></textarea><br /><br />
+  <label for="instructions">Instructions:</label><br />
+  <textarea
+          id="instructions"
+          name="instructions"
+          placeholder="Enter instructions"
+          rows="20"
+          cols="60"
+          required
+  ></textarea><br /><br />
 
-      <label for="boardid">Board ID:</label><br />
-      <input
-        type="text"
-        id="boardid"
-        name="boardid"
-        placeholder="Enter Board ID"
-        required
-      /><br />
-    </form>
-  </body>
+  <label for="board_id">
+    Board ID:
+    <span class="info-icon">i</span>
+    <span class="info-tooltip">
+          Access your board and check the URL in the address bar. In the board
+          URL, the <b>board_id</b> is the element that follows the
+          <code>/app/board/</code> segment. For example, in
+          <code>https://miro.com/app/board/o9J_l9_I58Q=/</code>, the
+          <b>board_id</b> is <code>o9J_l9_I58Q=</code>.
+        </span>
+  </label>
+  <br />
+  <input
+          type="text"
+          id="board_id"
+          name="board_id"
+          placeholder="Enter Board ID"
+          required
+  /><br /><br />
+
+  <label for="team_id">
+    Team ID:
+    <span class="info-icon">i</span>
+    <span class="info-tooltip">
+          Access your profile settings and navigate to the Team section. In the
+          URL, the <b>team_id</b> is the element that follows
+          <code>/app/settings/team/</code>. For example, in
+          <code>https://miro.com/app/settings/team/3458764611453376352/users</code>,
+          the <b>team_id</b> is <code>3458764611453376352</code>.
+        </span>
+  </label>
+  <br />
+  <input
+          type="text"
+          id="team_id"
+          name="team_id"
+          placeholder="Enter Team ID"
+          required
+  /><br /><br />
+
+  <button id="installButton" type="button" disabled onclick="window.location.href='/'">
+    Install Miro Activity Provider
+  </button>
+  <span class="tooltip">
+        Please fill in all fields to enable the button.
+      </span>
+</form>
+
+<script>
+  const form = document.getElementById('configurationForm');
+  const button = document.getElementById('installButton');
+  const inputs = form.querySelectorAll('input, textarea');
+
+  inputs.forEach((input) => {
+    input.addEventListener('input', () => {
+      const allFilled = Array.from(inputs).every(
+              (field) => field.value.trim() !== ''
+      );
+      button.disabled = !allFilled;
+    });
+  });
+</script>
+</body>
 </html>

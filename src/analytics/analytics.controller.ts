@@ -1,14 +1,14 @@
 import { Body, Controller, Get, Post } from "@nestjs/common";
-import { Activity } from "src/activity/interfaces/activity.interface";
 import { AnalyticsService } from "./analytics.service";
+import {Activity} from "../activity/entities/activity.entity";
 
 @Controller("analytics")
 export class AnalyticsController {
   constructor(private analyticsService: AnalyticsService) {}
 
   @Post()
-  analytics(@Body() activity: Activity) {
-    return this.analyticsService.findOne(activity.activityID);
+  async analytics(@Body() activity: Partial<Activity>) {
+    return this.analyticsService.findAll(activity.activityID);
   }
 
   @Get("contract")

@@ -21,12 +21,12 @@
           return;
         }
 
-        localStorage.setItem("IuserId", decodedData.IuserId);
+        localStorage.setItem("iUserId", decodedData.iUserId);
         localStorage.setItem("activityID", decodedData.activityID);
 
         document.getElementById(
           "welcomeMessage"
-        ).innerText = `Welcome ${decodedData.IuserId}`;
+        ).innerText = `Welcome ${decodedData.iUserId}`;
         document.getElementById(
           "activityDetails"
         ).innerText = `Activity Details for activity: ${decodedData.activityID}`;
@@ -36,11 +36,11 @@
         event.preventDefault();
         event.stopPropagation();
 
-        const miroUserId = document.getElementById("miroUserId").value;
+        const miroUserMail = document.getElementById("miroUserMail").value;
         const requestBody = {
-          IuserId: localStorage.getItem("IuserId"),
+          iUserId: localStorage.getItem("iUserId"),
           activityID: localStorage.getItem("activityID"),
-          miroUserId,
+          miroUserMail,
         };
 
         const url =
@@ -76,12 +76,13 @@
     <h1 id="activityDetails"></h1>
     <p>Instructions:</p>
     <form>
-      <label for="miroUserId">User ID:</label><br />
+      <label for="miroUserMail">User ID:</label><br />
       <input
-        type="text"
-        id="miroUserId"
-        name="userId"
-        placeholder="Your Miro User ID"
+        type="email"
+        id="miroUserMail"
+        name="userMail"
+        placeholder="Your E-mail address registered in your miro account."
+        required
       /><br /><br />
     </form>
     <a href="#" onclick="return registerActivity(event)">Register</a>

@@ -14,7 +14,8 @@ export class ConfigurationService {
   private readonly parameters: ConfigParameters[] = [
     { name: "name", type: "text/plain" },
     { name: "instructions", type: "text/plain" },
-    { name: "boardid", type: "text/plain" },
+    { name: "board_id", type: "text/plain" },
+    { name: "team_id", type: "text/plain" },
   ];
 
   getParameters(): ConfigParameters[] {

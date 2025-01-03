@@ -1,70 +1,100 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import { Request } from "express";
-import { MiroWrapperService } from "src/miro-wrapper/miro-wrapper.service";
-import { Activity } from "./interfaces/activity.interface";
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
+import {Injectable} from '@nestjs/common';
+import {InjectModel} from '@nestjs/mongoose';
+import {Request} from "express";
+import {Model} from 'mongoose';
+import {Activity, ActivityDocument} from './entities/activity.entity';
+import {join} from "node:path";
+import {readFileSync} from "node:fs";
+import {MiroWrapperService} from "../miro-wrapper/miro-wrapper.service";
+import {ActivityReqInterface} from "./interfaces/activity-request.interface";
+import {BoardEventSubscription, BoardEventSubscriptionDocument} from "../miro-wrapper/entities/board-event.entity";
+import {BoardUserSubscription, BoardUserSubscriptionDocument} from "../miro-wrapper/entities/board-user.entity";
 
 @Injectable()
 export class ActivityService {
-  private readonly activityList: Activity[] = [];
-  private readonly htmlContent: string;
-  private readonly miroWrapperService = MiroWrapperService.getInstance();
+    private readonly htmlContent: string;
+    private readonly miroWrapperService = MiroWrapperService.getInstance();
 
+    constructor(
+        @InjectModel(Activity.name)
+        private readonly activityModel: Model<ActivityDocument>,
+        @InjectModel(BoardUserSubscription.name)
+        private readonly boardSubscriptionModel: Model<BoardUserSubscriptionDocument>,
+        @InjectModel(BoardEventSubscription.name)
+        private readonly boardEventSubscriptionModel: Model<BoardEventSubscriptionDocument>,
 
-  constructor() {
-    const filePath = join(process.cwd(), "assets", "activity.html");
-    this.htmlContent = readFileSync(filePath, "utf-8");
-  }
+    ) {
+        const filePath = join(process.cwd(), "assets", "activity.html");
+        this.htmlContent = readFileSync(filePath, "utf-8");
+    }
 
-  public async deploy(
-    id: string,
-    request: Request
-  ): Promise<Record<string, string>> {
-    const protocol = request.protocol;
-    const host = request.hostname;
-    const url = `${protocol}://${host}/activity/interface/${id}`;
+    async createActivity(id: string, request: Request, activityReqInterface: ActivityReqInterface): Promise<Record<string, string>> {
 
-    return { deployUrl: url };
-  }
+        const protocol = request.protocol;
+        const host = request.hostname;
+        var obj = {activityID: id, iUserId: activityReqInterface["Inven!RAstdID"]};
 
-  public async provideActivity(
-    id: string,
-    request: Request,
-    activity: Activity
-  ): Promise<Record<string, string>> {
-    const protocol = request.protocol;
-    const host = request.hostname;
-    var obj = { activityID: id, IuserId: activity["Inven!RAstdID"] };
+        var encoded = btoa(JSON.stringify(obj));
+        const url = `${protocol}://${host}/activity/interface/${encoded}`;
 
-    var encoded = btoa(JSON.stringify(obj));
-    const url = `${protocol}://${host}/activity/interface/${encoded}`;
+        const boardId = activityReqInterface.json_params["board_id"];
+        const teamId = activityReqInterface.json_params["team_id"];
 
-    this.activityList.push(activity);
+        const newActivity = new this.activityModel({
+            activityID: activityReqInterface.activityID,
+            boardId: activityReqInterface.json_params["board_id"],
+            teamId: activityReqInterface.json_params["team_id"],
+            activityInstructions: activityReqInterface.json_params["instructions"],
+            activityName: activityReqInterface.json_params["name"],
+            iUserId: activityReqInterface.json_params["Inven!RAstdID"]
+        });
 
-    const teamId = activity.json_params["team_id"];
-    const boardId = activity.json_params["boardid"];
+        const subscribed = await this.boardEventSubscriptionModel.findOne({ boardId})
+        if (!subscribed) {
+            await this.miroWrapperService.subscribeBoard(teamId, boardId);
+            await new this.boardEventSubscriptionModel({boardId}).save();
+        }
+        await newActivity.save();
 
-    await this.miroWrapperService.subscribeBoard(teamId, boardId);
+        return {deployUrl: url};
+    }
 
-    return { deployUrl: url };
-  }
+    async findActivityById(activityID: string, request: Request): Promise<Record<string, string>> {
+        const protocol = request.protocol;
+        const host = request.hostname;
+        const url = `${protocol}://${host}/activity/interface/${activityID}`;
 
-  public async registerUserMiroId(request: Request): Promise<void> {
-    const { activityID, IuserId, miroUserId } = request.body;
+        return {deployUrl: url};
+    }
 
-    const activityData = this.activityList.find(
-      (activity) => activity.activityID === activityID
-    );
+    getInterface(): string {
+        return this.htmlContent;
+    }
 
-    if (!activityData) throw new NotFoundException();
-    const teamId = activityData.json_params["team_id"];
-    const boardId = activityData.json_params["boardid"];
+    async updateUserInfo(updateData: Partial<Activity>): Promise<Activity | null> {
 
-    await this.miroWrapperService.registerUser(teamId, boardId, miroUserId);
-  }
+        const miroUserMail = updateData.miroUserMail;
+        const iUserId = updateData.iUserId;
+        const activityID = updateData.activityID;
 
-  getInterface(): string {
-    return this.htmlContent;
-  }
+        const additionalDetails = await this.activityModel.findOne({ activityID}).exec()
+
+        if (!additionalDetails) { throw new Error('No activity details found for activity ID: ' + activityID); }
+
+        const { teamId, boardId } = additionalDetails;
+
+        const registered = await this.boardSubscriptionModel.findOne({ boardId, miroUserMail})
+
+        if (!registered) {
+            const miroUserId = await this.miroWrapperService.registerUser(teamId, boardId, miroUserMail);
+            if (miroUserId) {
+                updateData["miroUserId"] = miroUserId
+            }
+            await new this.boardSubscriptionModel({boardId, miroUserMail}).save();
+        }
+
+        return this.activityModel.findOneAndUpdate({iUserId}, updateData, {
+            new: true,
+        }).exec();
+    }
 }
