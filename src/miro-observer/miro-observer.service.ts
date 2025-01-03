@@ -5,17 +5,17 @@ import {InjectModel} from "@nestjs/mongoose";
 import {Model} from "mongoose";
 import {DeleteEventInterface} from "./interface/delete-event.interface";
 import {ActivityAnalytics} from "../analytics/entities/analytics.entity";
-import {User, UserDocument} from "../activity/entities/user.entity";
+import {Activity, ActivityDocument} from "../activity/entities/activity.entity";
 
 @Injectable()
-export class ObserverService {
+export class MiroObserverService {
 
     private readonly listUsers = new Map();
 
     constructor(@InjectModel(ActivityAnalytics.name)
                 private analyticsDtoModel: Model<ActivityAnalytics>,
-                @InjectModel(User.name)
-                private usersDtoModel: Model<UserDocument>
+                @InjectModel(Activity.name)
+                private readonly activityModel: Model<ActivityDocument>,
     ) {
     }
 
@@ -57,7 +57,7 @@ export class ObserverService {
     async fetchUser(userId: string): Promise<string> {
         let user = this.listUsers.get(userId);
         if (!user) {
-            const userInDb = await this.usersDtoModel.findOne(
+            const userInDb = await this.activityModel.findOne(
                 {miroUserId: userId},
                 {iUserId: 1, _id: 0}).exec()
             if (userInDb) {

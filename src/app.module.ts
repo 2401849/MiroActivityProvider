@@ -2,11 +2,10 @@ import { Module } from "@nestjs/common";
 import { ActivityModule } from "./activity/activity.module";
 import { AnalyticsModule } from "./analytics/analytics.module";
 import { ConfigurationModule } from "./configuration/configuration.module";
-import { MiroObserverModule } from "./miro-observer/miro-observer.module";
 import {ConfigModule, ConfigService} from "@nestjs/config";
 import { MiroWrapperOauthModule } from './miro-wrapper-oauth/miro-wrapper-oauth.module';
 import {MongooseModule} from "@nestjs/mongoose";
-import { ObserverModule } from './observer/observer.module';
+import { MiroObserverModule } from './miro-observer/miro-observer.module';
 
 
 @Module({
@@ -24,7 +23,7 @@ import { ObserverModule } from './observer/observer.module';
     AnalyticsModule,
     MiroObserverModule,
     MiroWrapperOauthModule,
-    ObserverModule,
+    MiroObserverModule,
   ],
 })
 
