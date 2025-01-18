@@ -1,9 +1,10 @@
-import { ConsoleLogger, Module } from "@nestjs/common";
-import { ActivityController } from "./activity.controller";
-import { Activity_1Service } from "./activity_1.service";
+import {Module} from "@nestjs/common";
+import {ActivityController} from "./activity.controller";
+import {ActivityService} from "./activity.service";
 
 @Module({
-  controllers: [ActivityController],
-  providers: [Activity_1Service],
+    controllers: [ActivityController],
+    providers: [ActivityService],
 })
-export class ActivityModule {}
+export class ActivityModule {
+}
