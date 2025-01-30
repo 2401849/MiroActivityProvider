@@ -5,7 +5,7 @@ import {CreateEventInterface} from "./interface/create-event.interface";
 import {DeleteEventInterface} from "./interface/delete-event.interface";
 import {UpdateEventInterface} from "./interface/update-event.interface";
 
-@Controller('miro-miro-observer')
+@Controller('miro-observer')
 export class MiroObserverController {
     constructor(private readonly observerService: MiroObserverService) {
     }
