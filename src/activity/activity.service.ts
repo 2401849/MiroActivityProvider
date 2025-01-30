@@ -13,7 +13,7 @@ import {BoardUserSubscription, BoardUserSubscriptionDocument} from "../miro-wrap
 @Injectable()
 export class ActivityService {
     private readonly htmlContent: string;
-    private readonly miroWrapperService = MiroWrapperService.getInstance();
+
 
     constructor(
         @InjectModel(Activity.name)
@@ -22,7 +22,7 @@ export class ActivityService {
         private readonly boardSubscriptionModel: Model<BoardUserSubscriptionDocument>,
         @InjectModel(BoardEventSubscription.name)
         private readonly boardEventSubscriptionModel: Model<BoardEventSubscriptionDocument>,
-
+        private readonly miroWrapperService: MiroWrapperService
     ) {
         const filePath = join(process.cwd(), "assets", "activity.html");
         this.htmlContent = readFileSync(filePath, "utf-8");
@@ -54,8 +54,11 @@ export class ActivityService {
             await this.miroWrapperService.subscribeBoard(teamId, boardId);
             await new this.boardEventSubscriptionModel({boardId}).save();
         }
-        await newActivity.save();
-
+        try {
+            await newActivity.save();
+        } catch (e) {
+            throw new Error(e);
+        }
         return {deployUrl: url};
     }
 

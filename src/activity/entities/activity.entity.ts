@@ -31,3 +31,5 @@ export class Activity {
 }
 
 export const ActivitySchema = SchemaFactory.createForClass(Activity);
+
+ActivitySchema.index({ activityID: 1, boardId: 1 }, { unique: true });

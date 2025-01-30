@@ -10,13 +10,20 @@ export class Metric {
     @Prop({ required: true })
     type: string;
 
-    @Prop()
+    @Prop({ type: Object })
     value?: any;
 }
 
-export class Analytics {
+@Schema({ collection: 'userAnalytics' })
+export class ActivityAnalytics {
+    @Prop({ required: true, unique: false })
+    inveniraStdID: string;
+
     @Prop({ required: true })
     activityId: string;
+
+    @Prop({ required: true })
+    boardId: string;
 
     @Prop({ type: [Metric], required: true })
     qualAnalytics: Metric[];
@@ -25,13 +32,6 @@ export class Analytics {
     quantAnalytics: Metric[];
 }
 
-@Schema({ collection: 'userAnalytics' })
-export class ActivityAnalytics {
-    @Prop({ required: true, unique: true })
-    inveniraStdID: string;
-
-    @Prop({ type: [Analytics], required: true })
-    analytics: Analytics[];
-}
-
 export const ActivityAnalyticsSchema = SchemaFactory.createForClass(ActivityAnalytics);
+
+ActivityAnalyticsSchema.index({ inveniraStdID: 1, activityId: 1, boardId: 1 }, { unique: true });
