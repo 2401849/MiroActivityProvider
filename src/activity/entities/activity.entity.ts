@@ -5,28 +5,28 @@ export type ActivityDocument = HydratedDocument<Activity>;
 
 @Schema({ collection: 'activities' })
 export class Activity {
-    @Prop({ required: true })
+    @Prop()
     activityID: string;
 
-    @Prop({ required: true })
+    @Prop()
     activityName: string;
 
     @Prop()
     activityInstructions?: string;
 
-    @Prop({ required: true })
+    @Prop()
     iUserId: string;
 
-    @Prop({ required: true })
+    @Prop()
     miroUserId: string;
 
-    @Prop({ required: true })
+    @Prop()
     miroUserMail: string;
 
-    @Prop({ required: true })
+    @Prop()
     teamId: string;
 
-    @Prop({ required: true })
+    @Prop()
     boardId: string;
 }
 
