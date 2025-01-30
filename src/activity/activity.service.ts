@@ -89,7 +89,7 @@ export class ActivityService {
         const registered = await this.boardSubscriptionModel.findOne({ boardId, miroUserMail})
 
         if (!registered) {
-            const miroUserId = await this.miroWrapperService.registerUser(teamId, boardId, miroUserMail);
+            const miroUserId = await this.miroWrapperService.registerUser(boardId, miroUserMail, teamId);
             if (miroUserId) {
                 updateData["miroUserId"] = miroUserId
             }
