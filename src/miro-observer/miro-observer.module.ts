@@ -5,16 +5,17 @@ import {ActivityAnalytics, ActivityAnalyticsSchema} from "../analytics/entities/
 import {MongooseModule} from "@nestjs/mongoose";
 import {Activity, ActivitySchema} from "../activity/entities/activity.entity";
 import {Memento} from "./memento";
+import {UserMap, UserMapSchema} from "./entities/user-map";
 
 @Module({
   controllers: [MiroObserverController],
-  providers: [MiroObserverService],
+  providers: [MiroObserverService, Memento],
   imports: [
     MongooseModule.forFeature([
         { name: ActivityAnalytics.name, schema: ActivityAnalyticsSchema },
       { name: Activity.name, schema: ActivitySchema },
+      { name: UserMap.name, schema: UserMapSchema },
     ]),
-      Memento
   ],
 })
 export class MiroObserverModule {}

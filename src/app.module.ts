@@ -5,6 +5,8 @@ import {ConfigurationModule} from "./configuration/configuration.module";
 import {ConfigModule, ConfigService} from "@nestjs/config";
 import {MiroWrapperModule} from './miro-wrapper/miro-wrapper.module';
 import {MongooseModule} from "@nestjs/mongoose";
+import {MiroObserverModule} from "./miro-observer/miro-observer.module";
+import {Memento} from "./miro-observer/memento";
 
 
 @Module({
@@ -12,7 +14,7 @@ import {MongooseModule} from "@nestjs/mongoose";
         imports: [ConfigModule], useFactory: async (configService: ConfigService) => ({
             uri: configService.get<string>('MONGO_URI'),
         }), inject: [ConfigService],
-    }), ConfigurationModule, ActivityModule, AnalyticsModule, MiroWrapperModule,],
+    }), ConfigurationModule, ActivityModule, AnalyticsModule, MiroWrapperModule, MiroObserverModule],
 })
 
 

@@ -24,5 +24,6 @@ export class MiroObserverController {
             case "update":
                 return this.observerService.update(body.event as UpdateEventInterface)
         }
+        return "this"
     }
 }
