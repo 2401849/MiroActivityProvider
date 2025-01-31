@@ -31,7 +31,7 @@ export class MiroWrapperService {
         };
         try {
             const response = await axios.post(apiUrl, data, {headers});
-            return response.data;
+            return response.data.successful[0];
         } catch (error) {
             throw new Error(`Error while registering user, ${error}`);
         }
