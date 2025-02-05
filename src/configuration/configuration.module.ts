@@ -1,9 +1,8 @@
-import { Module } from "@nestjs/common";
-import { ConfigurationController } from "./configuration.controller";
-import { ConfigurationService } from "./configuration.service";
+import {Module} from "@nestjs/common";
+import {ConfigurationController} from "./configuration.controller";
 
 @Module({
-  controllers: [ConfigurationController],
-  providers: [ConfigurationService],
+    controllers: [ConfigurationController],
 })
-export class ConfigurationModule {}
+export class ConfigurationModule {
+}
